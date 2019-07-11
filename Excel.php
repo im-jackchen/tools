@@ -383,10 +383,12 @@ class Excel
      ** @descr:       读取模板填值   格式设置 https://www.cnblogs.com/doseoer/p/11041856.html
      ** @return:      file
      **/
+
     public function explodeFromTemp()
     {
+
         $template_path = './demo.xls';
-        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($template_path);
+        $spreadsheet = IOFactory::load($template_path);
 
         $spreadsheet->setActiveSheetIndex(0);
 
@@ -397,11 +399,11 @@ class Excel
         $worksheet->getCell('C4')->setValue('John');
         $worksheet->getCell('D4')->setValue('PASS');
         $worksheet->getStyle('H4')
-            ->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_RED);
+            ->getFont()->getColor()->setARGB(Color::COLOR_RED);
 
         $date = time();
 
-        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
 
         $writer->save("./$date.xlsx");
     }
