@@ -23,9 +23,9 @@ class Excel
         $res['A1'] = $title . date('Y-m-d H:i:s');
         $res['A2'] = $info;
         $row_index = 3;
-        $keys      = array_values($ColumnName); //列名
-        $count     = count($ColumnName);
-        $index     = $this->excelHeader($count); //列号
+        $keys = array_values($ColumnName); //列名
+        $count = count($ColumnName);
+        $index = $this->excelHeader($count); //列号
         foreach ($index as $i => $sKey) {
             $res[$sKey . $row_index] = $keys[$i];
         }
@@ -82,7 +82,7 @@ class Excel
             $styleArray = [
                 'alignment' => [
                     'horizontal' => Alignment::HORIZONTAL_LEFT,
-                    'vertical'   => Alignment::VERTICAL_CENTER,
+                    'vertical' => Alignment::VERTICAL_CENTER,
                 ],
             ];
             $objSpreadsheet->getDefaultStyle()->applyFromArray($styleArray);
@@ -120,7 +120,7 @@ class Excel
                             is_numeric(str_replace(['￥', ','], '', $sItem))) {
                             /* 数字格式转换为数字单元格 */
                             $pDataType = DataType::TYPE_NUMERIC;
-                            $sItem     = str_replace(['￥', ','], '', $sItem);
+                            $sItem = str_replace(['￥', ','], '', $sItem);
                         }
                     } elseif (is_int($sItem)) {
                         $pDataType = DataType::TYPE_NUMERIC;
@@ -183,7 +183,7 @@ class Excel
                 $styleArray = [
                     'alignment' => [
                         'horizontal' => Alignment::HORIZONTAL_CENTER,
-                        'vertical'   => Alignment::VERTICAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
                     ],
                 ];
 
@@ -209,7 +209,7 @@ class Excel
                     'borders' => [
                         'allBorders' => [
                             'borderStyle' => Border::BORDER_THIN, // 设置border样式
-                            'color'       => ['argb' => 'FF000000'], // 设置border颜色
+                            'color' => ['argb' => 'FF000000'], // 设置border颜色
                         ],
                     ],
                 ];
@@ -305,7 +305,7 @@ class Excel
 
             /* 获取总行数 */
             $rowCnt = $currSheet->getHighestRow();
-            $data   = [];
+            $data = [];
 
             /* 读取内容 */
             for ($_row = 1; $_row <= $rowCnt; $_row++) {
@@ -313,8 +313,8 @@ class Excel
 
                 for ($_column = 1; $_column <= $columnCnt; $_column++) {
                     $cellName = Coordinate::stringFromColumnIndex($_column);
-                    $cellId   = $cellName . $_row;
-                    $cell     = $currSheet->getCell($cellId);
+                    $cellId = $cellName . $_row;
+                    $cell = $currSheet->getCell($cellId);
 
                     if (isset($options['format'])) {
                         /* 获取格式 */
@@ -357,8 +357,8 @@ class Excel
     }
     public function excelHeader($num = 0)
     {
-        $arr  = range('A', 'Z');
-        $no   = ceil($num / count($arr));
+        $arr = range('A', 'Z');
+        $no = ceil($num / count($arr));
         $data = [];
         if ($no <= 1) {
             for ($i = 0; $i < $num; $i++) {
@@ -369,12 +369,41 @@ class Excel
                 $data[] = $arr[$i];
             }
             for ($i = 0; $i < $num - count($arr); $i++) {
-                $list   = (($i + count($arr)) % count($arr));
+                $list = (($i + count($arr)) % count($arr));
                 $data[] = $arr[ceil(($i + 1) / count($arr)) - 1] . $arr[$list];
             }
         }
 
         return $data;
+    }
+    /**
+     ** @author:      chenjf
+     ** @mailto:      i@1890.tv
+     ** @create time: 2019-07-11 10:23:56
+     ** @descr:       读取模板填值   格式设置 https://www.cnblogs.com/doseoer/p/11041856.html
+     ** @return:      file
+     **/
+    public function explodeFromTemp()
+    {
+        $template_path = './demo.xls';
+        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($template_path);
+
+        $spreadsheet->setActiveSheetIndex(0);
+
+        $spreadsheet->setActiveSheetIndexByName('Mainreport');
+
+        $worksheet = $spreadsheet->getActiveSheet();
+
+        $worksheet->getCell('C4')->setValue('John');
+        $worksheet->getCell('D4')->setValue('PASS');
+        $worksheet->getStyle('H4')
+            ->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_RED);
+
+        $date = time();
+
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+
+        $writer->save("./$date.xlsx");
     }
 
 }
