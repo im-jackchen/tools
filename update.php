@@ -42,9 +42,14 @@ if (!is_dir($dir)) {
 if (isset($data['ref']) && $data['total_commits_count'] > 0) {
     $time = date('Y-m-d H:i:s');
     $res = "> pull start :" . $time . ">>>>>>>>>" . PHP_EOL;
-    $res .= shell_exec("cd /home/wwwroot/dir/ &&  git pull");
+    //$res .= shell_exec("cd /home/wwwroot/wdy.50it.top/ && git reset --hard && git pull");
+    exec("cd /home/wwwroot/wdy.50it.top/ && git reset --hard && git pull", $temp);
+    foreach ($temp as $key => $_temp) {
+        $res .= $_temp . PHP_EOL;
+    }
+    $res .= $temp;
     $res_log = PHP_EOL . '> *****************' . $time . '*******************' . PHP_EOL;
-    $res_log .= '### ' . $data['user_name'] . ' 在' . date('Y-m-d H:i:s') . '向' . $data['repository']['name'] . '项目的' . $data['ref'] . '分支push了' . $data['total_commits_count'] . '个commit：' . $data['head_commit']['message'];
+    $res_log .= '#### ' . $data['user_name'] . ' 在' . date('Y-m-d H:i:s') . '向' . $data['repository']['name'] . '项目的' . $data['ref'] . '分支push了' . $data['total_commits_count'] . '个commit：' . $data['head_commit']['message'];
     $res = str_replace('\n', PHP_EOL, $res);
     $res_log .= PHP_EOL . $res . PHP_EOL;
     $res_log .= "> pull end :" . date('Y-m-d H:i:s') . '<<<<<<<<<' . PHP_EOL;
@@ -54,3 +59,8 @@ if (isset($data['ref']) && $data['total_commits_count'] > 0) {
     echo 'success';exit();
 }
 echo 'no commit';exit();
+
+// 1、项目目录所有者www
+// 2、.git 权限是否够用
+// 3、sudo -u www  git pull   测试哦
+// 4、chown -R www:www ./*
